@@ -100,16 +100,17 @@ void PuzzleRoom::endArea()
     //If door is unlocked, go thru and finish room, otherwise print message and do nothing
     if (userInput == 1)
     {
-        if (doorLocked)
+        if ((!leftPuzzleWon) || (!rightPuzzleWon))
         {
             //print message and do nothing (currently ends game)
-            std::cout << "The door won't open, you try so hard you get a heart attack and die" << std::endl;
-            gameOver = true;
+            std::cout << "The door won't open" << std::endl;
         }
         else
         {
             //Finish room
-            //TODO
+            std::cout << "The door creaks open and you slide through the crack. Escaping the room." << std::endl;
+            std::cout << "========================================================================" << std::endl;
+            gameOver = true;
         }
     }
     else if (userInput == 2)
@@ -217,6 +218,7 @@ void PuzzleRoom::rightArea()
         }
         else
         {
+            std::cout << "test" << std::endl;
             //play right puzzle
             rightPuzzle();
         }
@@ -379,14 +381,17 @@ void PuzzleRoom::rightPuzzle()
 
     //load board with ints 0-15 and randomizer with random ints
     //generate initial rand() seed based off system time
-    srand(time(0));
+    srand(static_cast<int>(time(0)));
+    int numbers = 3;
     for (int i = 0; i < boardSize; i++)
     {
-        board[i] = i;
-        //get new random seed from last random number
+        board[i] = (i % numbers) + 1;
+        //get new random seed from last rand om number
         srand(rand());
-        randomizer[i] = time(NULL) / rand(); //random ints with system clock as random seed
+        randomizer[i] = rand(); //random ints with system clock as random seed
     }
+    //set random board number to zero
+    board[rand() % 9] = 0;
 
     //RANDOM SORT:
     //performed through a selection sort of the randomizer, and
@@ -413,14 +418,10 @@ void PuzzleRoom::rightPuzzle()
     }
 
     //BEGIN PUZZLE LOOP
-    while ((!puzzleFail) && (!leftPuzzleWon))
+    while ((!puzzleFail) && (!rightPuzzleWon))
     {
         //clear screen
         clearScreen();
-
-        //print is sorted followed by new line
-        std::cout << "is sorted: " << std::boolalpha <<
-            std::is_sorted(std::begin(board), std::end(board)) << std::endl << std::endl;
 
         //print randomized board
         for (int i = 0; i < boardSize; i++)
@@ -435,6 +436,24 @@ void PuzzleRoom::rightPuzzle()
 
             if ((i + 1) % 3 == 0) std::cout << std::endl;
         }
+
+        //SORT CHECKING:
+        //move zero value to first value using indexOfZero
+        for (int i = indexOfZero; i > 0; i--) std::swap(board[i], board[i - 1]);
+
+        //check sorting of the array minus the first index (now set to 0) sorted followed by new line
+        std::cout << "is sorted: " << std::boolalpha <<
+            std::is_sorted(std::begin(board) + 1, std::end(board)) << std::endl << std::endl;
+        if (std::is_sorted(std::begin(board) + 1, std::end(board)))
+        {
+            clearScreen();
+            std::cout << "Congrats, you've completed the puzzle!" << std::endl;
+            rightPuzzleWon = true;
+            continue;
+        }
+
+        //move value zero value back to original spot
+        for (int i = 0; i < indexOfZero; i++) std::swap(board[i], board[i + 1]);
 
         //Print directions
         std::cout << "Align the pieces in order," << std::endl <<
@@ -536,8 +555,6 @@ void PuzzleRoom::rightPuzzle()
         }
 
     }
-
-
 }
 
 void PuzzleRoom::getInput(int numOptions)
