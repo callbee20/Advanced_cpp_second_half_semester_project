@@ -473,9 +473,9 @@ void PuzzleRoom::rightPuzzle()
         //get input
         std::cout << "Which number do you want to swap?: " << std::endl <<
             "1. Left" << std::endl <<
-            "2. Bottom" << std::endl <<
+            "2. Down" << std::endl <<
             "3. Right" << std::endl <<
-            "4. Top" << std::endl <<
+            "4. Up" << std::endl <<
             "5. Exit" << std::endl;
         getInput(5);
 
