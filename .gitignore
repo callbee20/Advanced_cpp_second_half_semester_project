@@ -104,3 +104,6 @@ CMakeLists.txt.user*
 # --------
 *.dll
 *.exe
+
+# MSVC directory
+build-advanced_cpp_second_half_semester_project-Desktop_Qt_6_5_0_MSVC2019_64bit-Debug/
